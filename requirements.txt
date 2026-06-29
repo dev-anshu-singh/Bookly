@@ -3,3 +3,7 @@ uvicorn
 asyncpg
 pydantic-settings
 sqlmodel
+alembic
+pydantic
+bcrypt
+pyjwt

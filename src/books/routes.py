@@ -46,5 +46,4 @@ async def delete_books(book_uid:str,session: AsyncSession = Depends(get_session)
         return {}
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
-
 # do not return anything

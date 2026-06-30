@@ -4,8 +4,10 @@ class Settings(BaseSettings):
     DATABASE_URL:str
     JWT_SECRET:str
     JWT_ALGORITHM:str
-    REDIS_HOST:str = 'localhost'
-    REDIS_PORT:int = 6379
+    REDIS_HOST:str
+    REDIS_PORT:int
+    REDIS_USERNAME: str
+    REDIS_PASSWORD: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

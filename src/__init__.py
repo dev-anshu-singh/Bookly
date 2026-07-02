@@ -3,6 +3,7 @@ from src.books.routes import book_router
 from src.auth.routes import auth_router
 from contextlib import asynccontextmanager
 from src.db.main import init_db
+from src.reviews.router import review_router
 
 # coroutine that will run throughout the lifespan of the application
 @asynccontextmanager
@@ -28,3 +29,4 @@ app = FastAPI(
 
 app.include_router(book_router, prefix=f"/api/{version}/books", tags=['books'])
 app.include_router(auth_router, prefix=f"/api/{version}/auth", tags=['auth'])
+app.include_router(review_router, prefix=f"/api/{version}/reviews", tags=['review'])

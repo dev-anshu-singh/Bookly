@@ -9,3 +9,4 @@ bcrypt
 pyjwt
 aioredis
 redis
+sqlalchemy

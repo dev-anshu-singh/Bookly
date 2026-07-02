@@ -1,5 +1,5 @@
 import bcrypt
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 import jwt
 from src.config import Config
 import uuid
@@ -26,7 +26,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_access_token(user_data: dict, expiry: timedelta=None, refresh:bool=False):
     payload = {}
     payload['user']=user_data
-    payload['exp'] = datetime.now() + (expiry if expiry else timedelta(seconds = ACCESS_TOKEN_EXPIRATION))
+    payload['exp'] = datetime.now(timezone.utc) + (expiry if expiry else timedelta(seconds = ACCESS_TOKEN_EXPIRATION))
     payload['jti']=str(uuid.uuid4())
     # convert to string since we need to serialize it ot json
     payload['refresh']=refresh

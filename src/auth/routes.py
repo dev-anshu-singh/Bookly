@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from .schemas import UserCreateModel, UserLoginModel, UserModel
+from .schemas import UserCreateModel, UserLoginModel, UserModel, UserBooksModel
 from .service import UserService
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -7,12 +7,13 @@ from fastapi.exceptions import HTTPException
 from .utils import verify_password, create_access_token, decode_token
 from datetime import timedelta
 from fastapi.responses import JSONResponse
-from .dependencies import RefreshTokenBearer, AccessTokenBearer
+from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
 from datetime import datetime
 from src.db.redis_client import add_jti_to_blocklist
 
 auth_router = APIRouter()
 user_service = UserService()
+role_checker = RoleChecker(['admin','user'])
 
 REFRESH_TOKEN_EXPIERY = 2
 
@@ -60,7 +61,8 @@ async def login_user(user_login_data: UserLoginModel,session: AsyncSession = Dep
                     "refresh_token":refresh_token,
                     "user":{
                         "email":user.email,
-                        "uid":str(user.uid)
+                        "uid":str(user.uid),
+                        "role":user.role
                     }
                 }
             )
@@ -92,3 +94,7 @@ async def revoke_token(token_data:dict = Depends(AccessTokenBearer())):
         },
         status_code=status.HTTP_200_OK
     )
+
+@auth_router.get('/me',response_model=UserBooksModel)
+async def get_curr_user(user=Depends(get_current_user),_:bool=Depends(role_checker)):
+    return user

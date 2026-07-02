@@ -19,7 +19,5 @@ async def add_jti_to_blocklist(jti:str)->None:
     )
 
 async def token_in_blocklist(jti:str)->bool:
-    if await token_blocklist.get(name=jti):
-        return True
-    else:
-        return False
+    exists = await token_blocklist.exists(jti)
+    return exists>0

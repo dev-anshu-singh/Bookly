@@ -25,20 +25,20 @@ def register_all_middleware(app:FastAPI):
         return response
 
     # check aut authorization header, although already done via dependency
-    @app.middleware('http')
-    async def authorization(request:Request,call_next):
-        if not "Authorization" in request.headers:
-#             cannot raise exception in middleware, it will be raised but not be returned as a response.
-            return JSONResponse(
-                content = {
-                    "message":"Unauthorized",
-                    "resolution":"please provide the right credentials to proceed"
-                },
-                status_code = status.HTTP_401_UNAUTHORIZED
-            )
-        response = await call_next(request)
-
-        return response
+#     @app.middleware('http')
+#     async def authorization(request:Request,call_next):
+#         if not "Authorization" in request.headers:
+# #             cannot raise exception in middleware, it will be raised but not be returned as a response.
+#             return JSONResponse(
+#                 content = {
+#                     "message":"Unauthorized",
+#                     "resolution":"please provide the right credentials to proceed"
+#                 },
+#                 status_code = status.HTTP_401_UNAUTHORIZED
+#             )
+#         response = await call_next(request)
+#
+#         return response
 
 #     ASGI = Asynchronous Server Gateway Interface
 # fastsapi is built on top of ASGI, in any middleware that can be used with asgi can work with fastapi

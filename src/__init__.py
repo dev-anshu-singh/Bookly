@@ -27,7 +27,10 @@ app = FastAPI(
     title='Books API',
     description='A Rest API for book review web service',
     version = version,
-    lifespan = life_span
+    lifespan = life_span,
+    docs_url=f"/api/{version}/docs",
+    redoc_url=f"/api/{version}/redoc",
+    openapi_url=f"/api/{version}/openapi.json"
 )
 
 register_all_error(app)

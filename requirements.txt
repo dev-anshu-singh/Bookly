@@ -14,3 +14,5 @@ fastapi_mail
 itsdangerous
 celery
 asgiref
+pytest
+schemathesis

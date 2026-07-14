@@ -83,7 +83,7 @@ async def verify_user_account(token:str,session:AsyncSession=Depends(get_session
         )
     return JSONResponse(content={
         "message":"Error occured during verification"
-    },status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    },status_code=status.HTTP_400_BAD_REQUEST)
 
 @auth_router.post("/login")
 async def login_user(user_login_data: UserLoginModel,session: AsyncSession = Depends(get_session)):

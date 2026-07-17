@@ -14,7 +14,7 @@ from src.errors import *
 from src.config import Config
 from src.mail import create_message, mail
 from src.db.main import get_session
-from src.celery_tasks import send_email
+# from src.celery_tasks import send_email
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -23,13 +23,19 @@ role_checker = RoleChecker(['admin','user'])
 REFRESH_TOKEN_EXPIERY = 2
 
 @auth_router.post("/send_mail")
-async def send_mail(emails:EmailModel):
+async def send_mail(emails:EmailModel,bg_tasks:BackgroundTasks):
     emails = emails.addresses
     html = "<h1>Welcome to the app</h1>"
     subject = "Test mail bookly"
 
-    send_email.delay(emails,subject,html)
+    message = create_message(
+        recipients=emails,
+        subject=subject,
+        body=html
+    )
+    # send_email.delay(emails,subject,html)
 
+    bg_tasks.add_task(mail.send_message, message)
     return {"message":"email send successfully"}
 
 
@@ -58,7 +64,17 @@ async def create_user_Account(user_data:UserCreateModel, bg_tasks:BackgroundTask
         subject = "Verify your email"
         emails = [email]
 
-        send_email.delay(email,subject,html_message)
+        # send_email.delay(email,subject,html_message)
+        # bg_tasks.add_task(mail.send_message, html_message)
+
+        message = create_message(
+            recipients=[email],
+            subject="Verify your email",
+            body=html_message
+        )
+
+        # 2. Pass the message object to the background task
+        bg_tasks.add_task(mail.send_message, message)
 
         return {
             "message":"Account created successfully, Check email to verify.",
@@ -150,7 +166,7 @@ async def get_curr_user(user=Depends(get_current_user),_:bool=Depends(role_check
     return user
 
 @auth_router.post('/password-reset-request')
-async def password_reset_request(email_data:PasswordResetRequestModel):
+async def password_reset_request(email_data:PasswordResetRequestModel,bg_tasks: BackgroundTasks):
     email = email_data.email
 
     token = create_url_safe_token({"email": email})
@@ -162,15 +178,16 @@ async def password_reset_request(email_data:PasswordResetRequestModel):
             <p>Please click this link <a href="{link}">link</a> to reset your password</p>
             """
 
-    # message = create_message(
-    #     recipients=[email],
-    #     subject="Reset your password",
-    #     body=html_message
-    # )
+    message = create_message(
+        recipients=[email],
+        subject="Reset your password",
+        body=html_message
+    )
     # await mail.send_message(message)
 
     subject = "Reset your password"
-    send_email.delay([email],subject,html_message)
+    # send_email.delay([email],subject,html_message)
+    bg_tasks.add_task(mail.send_message, html_message)
 
     return JSONResponse(
         content={
